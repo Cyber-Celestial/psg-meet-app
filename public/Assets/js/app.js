@@ -458,7 +458,9 @@ var MyApp = (function () {
   }
   $(document).on("click", ".people-heading", function () {
     $(".in-call-wrap-up").show(300);
+    $(".chat-show-wrap").hide(300);
     $(this).addClass("active");
+    $(".chat-heading").removeClass("active");
   });
 
   $(document).on("click", ".meeting-heading-cross", function () {
@@ -466,6 +468,7 @@ var MyApp = (function () {
   });
   $(document).on("click", ".top-left-participant-wrap", function () {
     $(".people-heading").addClass("active");
+    $(".chat-heading").removeClass("active");
     $(".g-right-details-wrap").show(300);
     $(".in-call-wrap-up").show(300);
     $(".chat-show-wrap").hide(300);
