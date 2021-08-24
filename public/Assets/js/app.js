@@ -1,6 +1,5 @@
 var AppProcess = (function () 
 {
-
   var peers_connection_ids = [];
   var peers_connection = [];
   var remote_vid_stream = [];
@@ -8,7 +7,7 @@ var AppProcess = (function ()
   var local_div;
   var serverProcess;
   var audio;
-  var isAudioMute = true;
+  var isAudioMute = true;//Set mic to mute by default when user joins
   var rtp_aud_senders = [];
   var video_states = 
   {
@@ -25,42 +24,44 @@ var AppProcess = (function ()
     my_connection_id = my_connid;
     eventProcess();
     local_div = document.getElementById("locaVideoPlayer");
-  }
+  }//Function to initialise connection with signalling server
 
   function eventProcess() 
   {
-    $("#miceMuteUnmute").on("click", async function () 
+    $("#miceMuteUnmute").on("click", async function () //Function to Enable/Disable audio on pressing mic button
     {
       if (!audio) 
       {
-        await loadAudio();
+        await loadAudio();//Function to request user to allow meet webapp to access microphone
       }
-      if (!audio) 
+      if (!audio) //If user does'nt allow access to microphone , this alert message is shown
       {
         alert("Audio permission has not granted");
         return;
       }
-      if (isAudioMute) 
+      if (isAudioMute) //Condition to check if user is unmuting
       {
         audio.enabled = true;
         $(this).html(
-          "<span class='material-icons' style='width:100%;'>mic</span>"
+          "<span class='material-icons' style='width:100%;'>mic</span>"//Changing mic icon to inform user that they are unmuted
         );
-        updateMediaSenders(audio, rtp_aud_senders);
+        updateMediaSenders(audio, rtp_aud_senders);//Function to add user's audio track to list of media senders
       } 
-      else 
+      else // When user is muting themselves after being unmuted
       {
         audio.enabled = false;
         $(this).html(
-          "<span class='material-icons' style='width:100%;'>mic_off</span>"
+          "<span class='material-icons' style='width:100%;'>mic_off</span>"//changing mic icon to inform user that they are muted
         );
-        removeMediaSenders(rtp_aud_senders);
+        removeMediaSenders(rtp_aud_senders);//Function to remove user's audio track from list of media senders
       }
-      isAudioMute = !isAudioMute;
+      isAudioMute = !isAudioMute;//Change state of mic from muted to unmuted or vice versa
     });
-    $("#videoCamOnOff").on("click", async function () 
+
+    $("#videoCamOnOff").on("click", async function () //
     {
-      if (video_st == video_states.Camera) {
+      if (video_st == video_states.Camera) 
+      {
         await videoProcess(video_states.None);
       } else {
         await videoProcess(video_states.Camera);
@@ -215,7 +216,7 @@ var AppProcess = (function ()
           connid
         );
       }
-    };
+    };//219 xplain
     connection.ontrack = function (event) 
     {
       if (!remote_vid_stream[connid]) 
@@ -501,7 +502,7 @@ var MyApp = (function () {
         $(value).hide(300);
       }
     });
-  });
+  });//mouseup check
   $(document).on("click", ".call-cancel-action", function () {
     $(".top-box-show").html("");
   });
