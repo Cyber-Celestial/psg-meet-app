@@ -5,7 +5,7 @@ const socket = require('socket.io');
 const port = process.env.PORT || 8080;
 //starting the server
 var server=app.listen(process.env.PORT || 5000,function(){
-    console.log("Listening on port ${port}`");
+    console.log("Listening on port ${PORT}`");
   });
 
 const fs = require("fs");
