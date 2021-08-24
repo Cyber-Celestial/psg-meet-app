@@ -58,7 +58,7 @@ var AppProcess = (function ()
       isAudioMute = !isAudioMute;//Change state of mic from muted to unmuted or vice versa
     });
 
-    $("#videoCamOnOff").on("click", async function () //
+    $("#videoCamOnOff").on("click", async function () //This is accessed by clicking html video button to change state of video
     {
       if (video_st == video_states.Camera) 
       {
@@ -69,7 +69,7 @@ var AppProcess = (function ()
     });
    
   }
-  async function loadAudio() {
+  async function loadAudio() {//This uses webRTC's get user media to get the mic track from user and add it to audioTracks
     try 
     {
       var astream = await navigator.mediaDevices.getUserMedia({
@@ -83,7 +83,7 @@ var AppProcess = (function ()
     }
   }
 
-  function connection_status(connection) 
+  function connection_status(connection) //This checks if the user is connected or not and checks his state
   {
     if (
       connection &&
@@ -98,7 +98,7 @@ var AppProcess = (function ()
       return false;
     }
   }
-  async function updateMediaSenders(track, rtp_senders) 
+  async function updateMediaSenders(track, rtp_senders) //This function updates the media senders if a new track is added or if a reack is replaced.
   {
     for (var con_id in peers_connection_ids) {
       if (connection_status(peers_connection[con_id])) 
@@ -114,7 +114,7 @@ var AppProcess = (function ()
       }
     }
   }
-  function removeMediaSenders(rtp_senders) 
+  function removeMediaSenders(rtp_senders) //This function is used to remove the track if the rtp sender when they exit the meet
   {
     for (var con_id in peers_connection_ids) 
     {
@@ -125,7 +125,7 @@ var AppProcess = (function ()
       }
     }
   }
-  function removeVideoStream(rtp_vid_senders) 
+  function removeVideoStream(rtp_vid_senders)  //This is used to remove the video stream when the user exits the meet or when user switches off camera
   {
     if (videoCamTrack) 
     {
@@ -135,7 +135,7 @@ var AppProcess = (function ()
       removeMediaSenders(rtp_vid_senders);
     }
   }
-  async function videoProcess(newVideoState) 
+  async function videoProcess(newVideoState)  //This function is used to set the video state of the user's video stream
   {
     if (newVideoState == video_states.None) 
     {
@@ -196,18 +196,18 @@ var AppProcess = (function ()
         urls: "stun:stun1.l.google.com:19302",
       },
     ],
-  };
+  };//Describes STUN servers to use as signalling servers
 
-  async function setConnection(connid) 
+  async function setConnection(connid) //This function is used to set a new webRTC connection between peers
   {
     var connection = new RTCPeerConnection(iceConfiguration);
 
-    connection.onnegotiationneeded = async function (event) 
+    connection.onnegotiationneeded = async function (event) //This event is fired when a change has occurred which requires session negotiation.
     {
       await setOffer(connid);
     };
 
-    connection.onicecandidate = function (event) 
+    connection.onicecandidate = function (event) //This is called whenever the local ICE agent needs to deliver a message to the other peer through the signaling server
     {
       if (event.candidate) 
       {
@@ -216,19 +216,19 @@ var AppProcess = (function ()
           connid
         );
       }
-    };//219 xplain
-    connection.ontrack = function (event) 
+    };
+    connection.ontrack = function (event) //This is an event handler which specifies a function to be called when the track event occurs, indicating that a track has been added to the RTCPeerConnection
     {
       if (!remote_vid_stream[connid]) 
       {
-        remote_vid_stream[connid] = new MediaStream();
+        remote_vid_stream[connid] = new MediaStream();//If remote vid stream is not already setup , this function does that
       }
       if (!remote_aud_stream[connid]) 
       {
-        remote_aud_stream[connid] = new MediaStream();
+        remote_aud_stream[connid] = new MediaStream();//If remote aud stream is not already setup , this function does that
       }
 
-      if (event.track.kind == "video") 
+      if (event.track.kind == "video")  //This loads video player tracks of the user
       {
         remote_vid_stream[connid]
           .getVideoTracks()
@@ -239,7 +239,7 @@ var AppProcess = (function ()
         remoteVideoPlayer.srcObject = remote_vid_stream[connid];
         remoteVideoPlayer.load();
       } 
-      else if (event.track.kind == "audio") 
+      else if (event.track.kind == "audio") //This loads audio player tracks of the user
       {
         remote_aud_stream[connid]
           .getAudioTracks()
@@ -258,13 +258,13 @@ var AppProcess = (function ()
       video_st == video_states.Camera 
     ) {
       if (videoCamTrack) {
-        updateMediaSenders(videoCamTrack, rtp_vid_senders);
+        updateMediaSenders(videoCamTrack, rtp_vid_senders); //Updates Camera state to media senders when the videocamtrack is true
       }
     }
     return connection;
   }
 
-  async function setOffer(connid) 
+  async function setOffer(connid) //This function is used to create offer to connect with other peers and also to set the local description of the user
   {
     var connection = peers_connection[connid];
     var offer = await connection.createOffer();
@@ -276,51 +276,52 @@ var AppProcess = (function ()
       connid
     );
   }
-  async function SDPProcess(message, from_connid) 
+  async function SDPProcess(message, from_connid) //This is used to react to the SDPProcess message to establish a successful connection depending on the type of the message(offer or answer)
   {
-    message = JSON.parse(message);
-    if (message.answer) 
+    message = JSON.parse(message);//Used to parse the SDPProcess message data
+    if (message.answer) //If message is an answer , then the peer has responded and we can set their remote description and form connection
     {
       await peers_connection[from_connid].setRemoteDescription(
         new RTCSessionDescription(message.answer)
       );
     } 
-    else if (message.offer) 
+    else if (message.offer) //If the message is of type offer then the peer is trying to establish connection with us.
     {
-      if (!peers_connection[from_connid]) 
+      if (!peers_connection[from_connid]) //So if the peer does'nt already have their data in peers_connection
       {
-        await setConnection(from_connid);
+        await setConnection(from_connid);//We form a connection with the peer
       }
       await peers_connection[from_connid].setRemoteDescription(
-        new RTCSessionDescription(message.offer)
+        new RTCSessionDescription(message.offer)//Then we set a remote desctiption with the peer's data
       );
-      var answer = await peers_connection[from_connid].createAnswer();
-      await peers_connection[from_connid].setLocalDescription(answer);
+      var answer = await peers_connection[from_connid].createAnswer();//We now use our data to create an answer message which the peer could use to establish connection with us
+      await peers_connection[from_connid].setLocalDescription(answer);//We set this as out local description
       serverProcess(
         JSON.stringify({
           answer: answer,
         }),
         from_connid
-      );
+      );//we send this answer to the peer by stringifying it
     } 
-    else if (message.icecandidate) 
+    else if (message.icecandidate) //If the message is of type ice candidate
     {
-      if (!peers_connection[from_connid]) 
+      if (!peers_connection[from_connid]) //and if the connection is not set
       {
-        await setConnection(from_connid);
+        await setConnection(from_connid);//We set the connection
       }
       try 
       {
         await peers_connection[from_connid].addIceCandidate(
-          message.icecandidate
+          message.icecandidate //Then we Add ice candidate to peer connection 
         );
       } catch (e) {
         console.log(e);
       }
     }
   }
-  async function closeConnection(connid) 
+  async function closeConnection(connid) //This is called when a peer exits out of the meet
   {
+    //We de-initialise all variables used up by the exiting peer
     peers_connection_ids[connid] = null;
     if (peers_connection[connid]) 
     {
@@ -365,33 +366,33 @@ var MyApp = (function () {
   var socket = null;
   var user_id = "";
   var meeting_id = "";
-  function init(uid, mid) 
+  function init(uid, mid) //This initialises the User's side of the app
   {
     user_id = uid;
     meeting_id = mid;
     $("#meetingContainer").show();
     $("#me h2").text(user_id + "(Me)");
     document.title = user_id;
-    event_process_for_signaling_server();
+    event_process_for_signaling_server();//This sets up the webRTC P2P connection among peers
     eventHandeling();
   }
 
   function event_process_for_signaling_server() 
   {
-    socket = io.connect();
+    socket = io.connect();//This connects the user to the socket
 
-    var SDP_function = function (data, to_connid) 
+    var SDP_function = function (data, to_connid) //This emits the SDPProcess of the user to the socket (SDPProcess is updated in AppProcess)
     {
       socket.emit("SDPProcess", {
         message: data,
         to_connid: to_connid,
       });
     };
-    socket.on("connect", () => {
+    socket.on("connect", () => { //If connect trigger is sent on socket 
       if (socket.connected) 
       {
-        AppProcess.init(SDP_function, socket.id);
-        if (user_id != "" && meeting_id != "") 
+        AppProcess.init(SDP_function, socket.id);//This function initialises AppProcess with the following parameters to set up the connection
+        if (user_id != "" && meeting_id != "") //When userid and meetingid is not null , then we emit that user is successfully connected
         {
           socket.emit("userconnect", {
             displayName: user_id,
@@ -400,18 +401,21 @@ var MyApp = (function () {
         }
       }
     });
-    socket.on("inform_other_about_disconnected_user", function (data) {
+    socket.on("inform_other_about_disconnected_user", function (data) { //This is invoked when a user disconnects from the meet and we have to remove their data and close the connection with them
       $("#" + data.connId).remove();
       $(".participant-count").text(data.uNumber);
       $("#participant_" + data.connId + "").remove();
       AppProcess.closeConnectionCall(data.connId);
     });
-    socket.on("inform_others_about_me", function (data) {
+    socket.on("inform_others_about_me", function (data) { //This is invoked when server emits inform_others_about_me on the socket
+      // We get the data about the newly added user on the server's side and Establish a connection with them
       addUser(data.other_user_id, data.connId, data.userNumber);
       AppProcess.setNewConnection(data.connId);
     });
     
-    socket.on("inform_me_about_other_user", function (other_users) {
+    socket.on("inform_me_about_other_user", function (other_users) {//This is invoked when server emits nform_me_about_other_user on the socket
+      //Here we get the entire array of peers in the meet and check if we have already added them as a peer
+      //We iterate through every user to check if they have been connected
       var userNumber = other_users.length;
       var userNumb = userNumber + 1;
       if (other_users) 
@@ -423,15 +427,15 @@ var MyApp = (function () {
             other_users[i].connectionId,
             userNumb
           );
-          AppProcess.setNewConnection(other_users[i].connectionId);
+          AppProcess.setNewConnection(other_users[i].connectionId); 
         }
       }
     });
     socket.on("SDPProcess", async function (data) {
-      await AppProcess.processClientFunc(data.message, data.from_connid);
+      await AppProcess.processClientFunc(data.message, data.from_connid);//This calls SDPFunction in AppProcess to allow peers to  set remote and local descriptions to establish connections
     });
   }
-  function eventHandeling() {
+  function eventHandeling() {//This is used to get meeting url and show full screen when user double clicks on other user's video
     var url = window.location.href;
     $(".meeting_url").text(url);
 
@@ -440,7 +444,9 @@ var MyApp = (function () {
     });
   }
 
-  function addUser(other_user_id, connId, userNum) {
+  function addUser(other_user_id, connId, userNum) { //This is used to create attributes for a new user 
+    //It clones the video box defined in action.html and initialises video and audio attributes 
+    // It also makes the user's id show up in people page and increases the participantn count
     var newDivId = $("#otherTemplate").clone();
     newDivId = newDivId.attr("id", connId).addClass("other");
     newDivId.find("h2").text(other_user_id);
@@ -457,6 +463,8 @@ var MyApp = (function () {
     );
     $(".participant-count").text(userNum);
   }
+
+  //This is to dynamically change the action.html page defenitions according to users currently in the meet
   $(document).on("click", ".people-heading", function () {
     $(".in-call-wrap-up").show(300);
     $(".chat-show-wrap").hide(300);
@@ -535,9 +543,6 @@ var MyApp = (function () {
   
   var base_url = window.location.origin;
   
-
-
-
   return {
     _init: function (uid, mid) {
       init(uid, mid);
