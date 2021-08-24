@@ -161,8 +161,6 @@ var AppProcess = (function ()
       {
         vstream = await navigator.mediaDevices.getUserMedia({
           video: {
-            width: 1920,
-            height: 1080,
           },
           audio: false,
         });
