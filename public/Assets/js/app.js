@@ -26,7 +26,7 @@ var AppProcess = (function ()
     local_div = document.getElementById("locaVideoPlayer");
   }//Function to initialise connection with signalling server
 
-  function eventProcess() 
+  function eventProcess() //Function to load audio and video based on user's clicking of buttons
   {
     $("#miceMuteUnmute").on("click", async function () //Function to Enable/Disable audio on pressing mic button
     {
@@ -82,7 +82,6 @@ var AppProcess = (function ()
       console.log(e);
     }
   }
-
   function connection_status(connection) //This checks if the user is connected or not and checks his state
   {
     if (
@@ -371,7 +370,7 @@ var MyApp = (function () {
     $("#meetingContainer").show();
     $("#me h2").text(user_id + "(Me)");
     document.title = user_id;
-    event_process_for_signaling_server();//This sets up the webRTC P2P connection among peers
+    event_process_for_signaling_server();//This sets up the signalling server connection with socket.io
     eventHandeling();
   }
 

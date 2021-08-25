@@ -13,7 +13,10 @@ const io = require("socket.io")(server, {
   allowEIO3: true, // false by default
 });
 app.use(express.static(path.join(__dirname, "")));
-
+//-----------------------------------------------------------------------------------------
+//Set up server for connecting to socket.io and initialising directory to let users get files from
+//the app.
+//-----------------------------------------------------------------------------------------
 var userConnections = [];//array to keep track of connected users
 io.on("connection", (socket) => { //When new user establishes a connection with socket
   console.log("socket id is ", socket.id);
