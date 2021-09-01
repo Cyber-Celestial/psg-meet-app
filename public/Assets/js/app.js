@@ -24,7 +24,7 @@ var AppProcess = (function ()
     my_connection_id = my_connid;
     eventProcess();
     local_div = document.getElementById("locaVideoPlayer");
-  }//Function to initialise connection with signalling server
+  }//Function to initialise connection between peers
 
   function eventProcess() //Function to load audio and video based on user's clicking of buttons
   {
