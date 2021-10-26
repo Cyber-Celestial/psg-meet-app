@@ -642,13 +642,13 @@ var MyApp = (function () {
     var attachFileName = $("#customFile").val().split("\\").pop();
     var attachFilePath =
       "public/attachment/" + meeting_id + "/" + attachFileName;
-      attachFileAreaForOther.innerHTML +=
+    attachFileArea.innerHTML +=
       "<div class='left-align' style='display:flex; align-items:center;'><img src='public/Assets/images/other.jpg' style='height:40px;width:40px;' class='caller-image circle'><div style='font-weight:600;margin:0 5px;'>" +
-      data.username +
+      user_id +
       "</div>:<div><a style='color:#007bff;' href='" +
-      data.filePath +
+      attachFilePath +
       "' download>" +
-      data.fileName +
+      attachFileName +
       "</a></div></div><br/>";
     $("label.custom-file-label").text("");
     socket.emit("fileTransferToOther", {
