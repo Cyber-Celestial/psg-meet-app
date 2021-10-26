@@ -643,7 +643,7 @@ var MyApp = (function () {
     var attachFilePath =
       "public/attachment/" + meeting_id + "/" + attachFileName;
     attachFileArea.innerHTML +=
-      "<div class='left-align' style='display:flex; align-items:center;'><img src='public/assets/images/other.jpg' style='height:40px;width:40px;' ><div style='font-weight:600;margin:0 5px;'>"
+      "<div class='left-align' style='display:flex; align-items:center;'><img src='public/assets/images/me2.jpg' style='height:40px;width:40px;' ><div style='font-weight:600;margin:0 5px;'>"
       +
       user_id +
       "</div>:<div><a style='color:#007bff;' href='" +
