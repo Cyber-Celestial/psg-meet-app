@@ -426,7 +426,7 @@ var MyApp = (function () {
       var attachFileAreaForOther = document.querySelector(".show-attach-file");
 
       attachFileAreaForOther.innerHTML +=
-        "<div class='left-align' style='display:flex; align-items:center;'><img src='public/assets/images/other.jpg' style='height:40px;width:40px;' class='caller-image circle'><div style='font-weight:600;margin:0 5px;'>" +
+        "<div class='left-align' style='display:flex; align-items:center;'><img src='public/Assets/images/other.jpg' style='height:40px;width:40px;' class='caller-image circle'><div style='font-weight:600;margin:0 5px;'>" +
         data.username +
         "</div>:<div><a style='color:#007bff;' href='" +
         data.filePath +
