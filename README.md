@@ -26,7 +26,7 @@ ii)Live Server extension.<br/>
 
 ## Executing the program
 i) Clone the repository or download the zip file of the project.<br/>
-ii) Open the terminal and change directory to to folder where the project is stored.<br/>
+ii) Open the terminal and change directory to the folder where the project is stored.<br/>
 iii) Type on terminal commands , "npm install" "npm install express" and "npm install nodemon" to install node modules.<br/>
 iv) Run the command 'npm start' on the terminal to start the server. It will run on port 5000 by default.<br/>
 v) Open your web browser and type in 'http://localhost:5000/index.html' to launch the index page of the app.<br/>
